@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
+//import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
+//import frc.robot.RobotContainer;
 import frc.robot.subsystems.pathweaver;
 
 public class Autonomous extends SequentialCommandGroup
@@ -17,7 +17,7 @@ public class Autonomous extends SequentialCommandGroup
         autonomous_trajectory = subsystem.getTrajectory();
     }
 
-    private RamseteCommand getRamseteCommand()
+   /* private RamseteCommand getRamseteCommand()
     {
         return new RamseteCommand
         (
@@ -25,5 +25,5 @@ public class Autonomous extends SequentialCommandGroup
             kinematics, wheelSpeeds, leftController, 
             rightController, outputVolts, requirements
         );
-    }
+    }*/
 }

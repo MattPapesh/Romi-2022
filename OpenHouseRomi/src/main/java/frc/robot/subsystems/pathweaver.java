@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class pathweaver 
+public class pathweaver extends SubsystemBase
 {
     private final String PARENT_FOLDER = "paths/"; 
     private final String FILE_TYPE = ".wpilib.json"; 
@@ -15,7 +16,7 @@ public class pathweaver
     private String path_dir = "";
     private Trajectory trajectory = null; 
 
-    public pathweaver(String path_name)
+    public void begin(String path_name)
     {
         this.path_name = path_name;
         path_dir = PARENT_FOLDER + path_name + FILE_TYPE; 

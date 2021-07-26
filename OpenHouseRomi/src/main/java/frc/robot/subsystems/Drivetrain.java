@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.kinematics.*;
+import edu.wpi.first.wpilibj.geometry.*;
 import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -30,6 +32,8 @@ public class Drivetrain extends SubsystemBase {
 
   // Set up the RomiGyro
   private final RomiGyro m_gyro = new RomiGyro();
+
+  private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
 
   // Set up the BuiltInAccelerometer
   private final BuiltInAccelerometer m_accelerometer = new BuiltInAccelerometer();
@@ -130,8 +134,21 @@ public class Drivetrain extends SubsystemBase {
     m_gyro.reset();
   }
 
+  public Pose2d getPose()
+  {
+    return m_odometry.getPoseMeters();
+  }
+
+  public void resetOdometry(Pose2d pose2d)
+  {
+    resetEncoders();
+    m_odometry.resetPosition(pose2d, m_gyro.getRotation2d());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    m_odometry.update(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
   }
 }

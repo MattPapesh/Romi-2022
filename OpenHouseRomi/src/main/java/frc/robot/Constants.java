@@ -18,24 +18,24 @@ public final class Constants
 {
     public static final class Drive //Found with frc characterization tool
     {
-        public final double ksVolts = 0.189;
-        public final double kvVoltSecsPerMeter = 6.000; 
-        public final double kaVoltSecsPerMeterSquared = 0.203; 
-        public final double kpDriveVelocity = 1.050; 
+        public static final double ksVolts = 0.189;
+        public static final double kvVoltSecsPerMeter = 6.000; 
+        public static final double kaVoltSecsPerMeterSquared = 0.203; 
+        public static final double kpDriveVelocity = 1.050; 
 
-        public final double kTrackWidthMeters = 0.150;
-        public final DifferentialDriveKinematics kDriveKinematics = 
+        public static final double kTrackWidthMeters = 0.150;
+        public static final DifferentialDriveKinematics kDriveKinematics = 
         new DifferentialDriveKinematics(kTrackWidthMeters);
     };
 
     public static final class Autonomous
     {
-        public final double kMaxSpeedMetersPerSec = 0.800;
-        public final double kMaxAccelerationMeterPerSecSquared = 0.800;
+        public static final double kMaxSpeedMetersPerSec = 0.800;
+        public static final double kMaxAccelerationMeterPerSecSquared = 0.800;
 
         //Baseline values:
-        public final double kRamseteB = 2.000; 
-        public final double kRamseteZeta = 0.700; 
+        public static final double kRamseteB = 2.000; 
+        public static final double kRamseteZeta = 0.700; 
     };
 
 }

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -19,7 +20,8 @@ public class Autonomous extends SequentialCommandGroup
     private Trajectory trajectory = null;
     private Pose2d pose2d = null;  
     private RamseteController ramsete_controller = null;  
-    private SimpleMotorFeedforward SMF = null; 
+    private SimpleMotorFeedforward SMF = null;
+    private PIDController PID_controller = null;
 
     public Autonomous(pathweaver pathweaver, Drivetrain drivetrain, String path_name)
     {
@@ -30,9 +32,9 @@ public class Autonomous extends SequentialCommandGroup
         this.drivetrain = drivetrain; 
         trajectory = pathweaver.getTrajectory();
         pose2d = drivetrain.getPose(); // may need to be constantly called???
-        ramsete_controller = new RamseteController(new Constants.Autonomous().kRamseteB, new Constants.Autonomous().kRamseteZeta);
-        SMF = new SimpleMotorFeedforward(new Constants.Drive().ksVolts, new Constants.Drive().kvVoltSecsPerMeter, new Constants.Drive().kaVoltSecsPerMeterSquared);
-
+        ramsete_controller = new RamseteController(Constants.Autonomous.kRamseteB, Constants.Autonomous.kRamseteZeta);
+        SMF = new SimpleMotorFeedforward(Constants.Drive.ksVolts, Constants.Drive.kvVoltSecsPerMeter, Constants.Drive.kaVoltSecsPerMeterSquared);
+        PID_controller = new PIDController(Constants.Drive.kpDriveVelocity, 0, 0);
         //Once everthing has been done, call the 
     }
 
@@ -41,8 +43,8 @@ public class Autonomous extends SequentialCommandGroup
         return new RamseteCommand
         (
             trajectory, pose2d, ramsete_controller, SMF,
-            new Constants.Drive().kDriveKinematics, drivetrain.getWheelSpeeds(), leftController, 
-            rightController, outputVolts, pathweaver
+            Constants.Drive.kDriveKinematics, drivetrain.getWheelSpeeds(), PID_controller, 
+            PID_controller, drivetrain.tankDriveVolts, drivetrain //STILL NEED TO USE RESET ODOMETRY() FROM THE ROBOT CONTAINER EXAMPLE
         );
     }
 }

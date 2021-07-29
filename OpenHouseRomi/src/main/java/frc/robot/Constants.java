@@ -18,12 +18,15 @@ public final class Constants
 {
     public static final class Drive //Found with frc characterization tool
     {
-        public static final double ksVolts = 0.189;
-        public static final double kvVoltSecsPerMeter = 6.000; 
-        public static final double kaVoltSecsPerMeterSquared = 0.203; 
-        public static final double kpDriveVelocity = 1.050; 
+        public static final double ksVolts = 0.373;
+        public static final double kvVoltSecsPerMeter = 6.23; 
+        public static final double kaVoltSecsPerMeterSquared = 0.0175; 
+        public static final double kpDriveVelocity = 0.00181;  
 
-        public static final double kTrackWidthMeters = 0.150;
+        public static final double kiDriveCoefficient = 0.000;
+        public static final double kdDriveCoefficient = 0.000; 
+
+        public static final double kTrackWidthMeters = 0.646043228;
         public static final DifferentialDriveKinematics kDriveKinematics = 
         new DifferentialDriveKinematics(kTrackWidthMeters);
     };
@@ -31,11 +34,13 @@ public final class Constants
     public static final class Autonomous
     {
         public static final double kMaxSpeedMetersPerSec = 0.800;
-        public static final double kMaxAccelerationMeterPerSecSquared = 0.800;
+        public static final double kMaxAccelerationMetersPerSecSquared = 0.800;
 
         //Baseline values:
         public static final double kRamseteB = 2.000; 
-        public static final double kRamseteZeta = 0.700; 
+        public static final double kRamseteZeta = 0.700;
+        
+        public static final String autonomous_path = "path2";
     };
 
 }

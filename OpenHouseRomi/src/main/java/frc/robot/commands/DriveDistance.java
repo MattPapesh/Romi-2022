@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveDistance extends CommandBase {
   private final Drivetrain m_drive;
-  private final double m_distance;
+  //private final double m_distance;
   private final double m_speed;
 
   /**
@@ -21,7 +21,7 @@ public class DriveDistance extends CommandBase {
    * @param drive The drivetrain subsystem on which this command will run
    */
   public DriveDistance(double speed, double inches, Drivetrain drive) {
-    m_distance = inches;
+    //m_distance = inches;
     m_speed = speed;
     m_drive = drive;
     addRequirements(drive);
@@ -50,6 +50,6 @@ public class DriveDistance extends CommandBase {
   @Override
   public boolean isFinished() {
     // Compare distance travelled from start to desired distance
-    return Math.abs(m_drive.getAverageDistanceInch()) >= m_distance;
+    return true;//Math.abs(m_drive.getAverageDistanceInch()) >= m_distance;
   }
 }

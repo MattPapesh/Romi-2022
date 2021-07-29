@@ -1,50 +1,49 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
+//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.*;
 
-public class Autonomous extends SequentialCommandGroup
+public class Autonomous extends CommandBase
 {
+    private RamseteCommand ramsete_command = null;
+    //private Command command = null;
+    
     private pathweaver pathweaver = null;
     private Drivetrain drivetrain = null; 
-    private Trajectory trajectory = null;
-    private Pose2d pose2d = null;  
-    private RamseteController ramsete_controller = null;  
-    private SimpleMotorFeedforward SMF = null;
-    private PIDController PID_controller = null;
 
-    public Autonomous(pathweaver pathweaver, Drivetrain drivetrain, String path_name)
+    public Autonomous(Drivetrain drivetrain, pathweaver pathweaver, String path_name)
     {
         addRequirements(pathweaver, drivetrain); 
         pathweaver.begin(path_name);
- 
-        this.pathweaver = pathweaver;
+        drivetrain.resetEncoders();
+        drivetrain.resetGyro();
+    
+        this.pathweaver = pathweaver; 
         this.drivetrain = drivetrain; 
-        trajectory = pathweaver.getTrajectory();
-        pose2d = drivetrain.getPose(); // may need to be constantly called???
-        ramsete_controller = new RamseteController(Constants.Autonomous.kRamseteB, Constants.Autonomous.kRamseteZeta);
-        SMF = new SimpleMotorFeedforward(Constants.Drive.ksVolts, Constants.Drive.kvVoltSecsPerMeter, Constants.Drive.kaVoltSecsPerMeterSquared);
-        PID_controller = new PIDController(Constants.Drive.kpDriveVelocity, 0, 0);
-        //Once everthing has been done, call the 
-    }
 
-    private RamseteCommand getRamseteCommand()
-    {
-        return new RamseteCommand
+        ramsete_command = 
+        new RamseteCommand 
         (
-            trajectory, pose2d, ramsete_controller, SMF,
-            Constants.Drive.kDriveKinematics, drivetrain.getWheelSpeeds(), PID_controller, 
-            PID_controller, drivetrain.tankDriveVolts, drivetrain //STILL NEED TO USE RESET ODOMETRY() FROM THE ROBOT CONTAINER EXAMPLE
+            pathweaver.getTrajectory(), drivetrain::getPose, 
+            new RamseteController(Constants.Autonomous.kRamseteB, Constants.Autonomous.kRamseteZeta), 
+            new SimpleMotorFeedforward(Constants.Drive.ksVolts, Constants.Drive.kvVoltSecsPerMeter, Constants.Drive.kaVoltSecsPerMeterSquared),
+            Constants.Drive.kDriveKinematics, drivetrain::getWheelSpeeds, 
+            new PIDController(Constants.Drive.kpDriveVelocity, Constants.Drive.kiDriveCoefficient, Constants.Drive.kdDriveCoefficient), 
+            new PIDController(Constants.Drive.kpDriveVelocity, Constants.Drive.kiDriveCoefficient, Constants.Drive.kdDriveCoefficient),
+            drivetrain::tankDriveVolts, drivetrain 
         );
     }
+
+    public Command getAutonomousCommand(){drivetrain.resetOdometry(pathweaver.getTrajectory().getInitialPose()); 
+        return new InstantCommand(() -> {drivetrain.resetOdometry(pathweaver.getTrajectory().getInitialPose());}, drivetrain)
+    .andThen(ramsete_command)
+    .andThen(new InstantCommand(() -> {drivetrain.tankDriveVolts(0, 0);}, drivetrain)); }
 }

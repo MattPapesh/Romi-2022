@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TurnDegrees extends CommandBase {
   private final Drivetrain m_drive;
-  private final double m_degrees;
+ // private final double m_degrees;
   private final double m_speed;
 
   /**
@@ -21,7 +21,7 @@ public class TurnDegrees extends CommandBase {
    * @param drive The drive subsystem on which this command will run
    */
   public TurnDegrees(double speed, double degrees, Drivetrain drive) {
-    m_degrees = degrees;
+    //m_degrees = degrees;
     m_speed = speed;
     m_drive = drive;
     addRequirements(drive);
@@ -55,14 +55,13 @@ public class TurnDegrees extends CommandBase {
        has a wheel placement diameter (149 mm) - width of the wheel (8 mm) = 141 mm
        or 5.551 inches. We then take into consideration the width of the tires.
     */
-    double inchPerDegree = Math.PI * 5.551 / 360;
+   // double inchPerDegree = Math.PI * 5.551 / 360;
     // Compare distance travelled from start to distance based on degree turn
-    return getAverageTurningDistance() >= (inchPerDegree * m_degrees);
+    return true; //getAverageTurningDistance() >= (inchPerDegree * m_degrees);
   }
-
-  private double getAverageTurningDistance() {
+/*  private double getAverageTurningDistance() {
     double leftDistance = Math.abs(m_drive.getLeftDistanceInch());
     double rightDistance = Math.abs(m_drive.getRightDistanceInch());
     return (leftDistance + rightDistance) / 2.0;
-  }
+  }*/
 }

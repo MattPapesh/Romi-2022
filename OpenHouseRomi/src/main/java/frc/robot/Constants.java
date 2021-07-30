@@ -23,8 +23,8 @@ public final class Constants
         public static final double kaVoltSecsPerMeterSquared = 0.0175; 
         public static final double kpDriveVelocity = 0.00181;  
 
-        public static final double kiDriveCoefficient = 0.000;
-        public static final double kdDriveCoefficient = 0.000; 
+        public static final double kiDriveCoefficient = 0;
+        public static final double kdDriveCoefficient = 0; 
 
         public static final double kTrackWidthMeters = 0.646043228;
         public static final DifferentialDriveKinematics kDriveKinematics = 
@@ -33,12 +33,12 @@ public final class Constants
 
     public static final class Autonomous
     {
-        public static final double kMaxSpeedMetersPerSec = 0.800;
-        public static final double kMaxAccelerationMetersPerSecSquared = 0.800;
+        public static final double kMaxSpeedMetersPerSec = 0.8;
+        public static final double kMaxAccelerationMetersPerSecSquared = 0.8;
 
         //Baseline values:
-        public static final double kRamseteB = 2.000; 
-        public static final double kRamseteZeta = 0.700;
+        public static final double kRamseteB = 2; 
+        public static final double kRamseteZeta = 0.7;
         
         public static final String autonomous_path = "path2";
     };

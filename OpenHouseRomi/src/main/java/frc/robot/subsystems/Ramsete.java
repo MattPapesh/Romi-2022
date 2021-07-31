@@ -15,14 +15,18 @@ import java.nio.file.Path;
 
 // Purpose: Provided a name of a pathweaver path, return a ramsete command
 
+// NOTE: ALL DIRECTORIES THAT ARE STORED ARE ONLY THE SUB DIRECTORIES OF THE DEPLOY FOLDER! 
+// A COMPLETE DIRECTORY WOULD BE THE DIRECTORY OF THE DEPLOY FOLDER FOLLOWED BY THE DIRECTORY IN QUESTION! 
+// THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
+
 public class Ramsete extends SubsystemBase{
     private Drivetrain drivetrain = null; 
     private RamseteCommand ramsete_command = null;
     private final String FILE_TYPE = ".wpilib.json";
-    private final String REDIRECT_DIR = "/../output/";
+    private final String REDIRECT_DIR = "../output/";
     private String group_dir = "";
-    private String path_dir = "";  
-    private String path_name = "";
+    private String path_dir = "Path directory was not provided! \n";
+    private String path_name = "Path name was not provided! \n";  
 
     /* Provides a directory to a .wpilib.json file type from the output of the group in question 
         /   EX:
@@ -32,16 +36,16 @@ public class Ramsete extends SubsystemBase{
         /
         /   paths/Groups/group_1/group/../output/path_A.wpilib.json
 
-        group dir "path/Groups/ToPort/group"      "/../output/ToPort_1.wpilib.json"
-        */
+        group dir "path/Groups/ToPort/group/"      "../output/ToPort_1.wpilib.json"
+    */
+    //paths\foward_and_back\Groups\forward = GROUP DIR
 
-    public Ramsete(Drivetrain drivetrain, String group_dir, String path_name){
+    public Ramsete(Drivetrain drivetrain, String group_dir){// paths/foward_and_back/Groups/../output/
         this.drivetrain = drivetrain; 
         this.group_dir = group_dir; 
-        this.path_name = path_name;
-        path_dir = group_dir + REDIRECT_DIR + path_name + FILE_TYPE; 
-       
-        setRamseteCommand(); 
+        
+        path_dir = group_dir + REDIRECT_DIR; 
+        // Is only a rough idea where thr path is located. A path name is needed to complete the directory
     }
 
     private Trajectory getTrajectory(){
@@ -51,7 +55,7 @@ public class Ramsete extends SubsystemBase{
             return TrajectoryUtil.fromPathweaverJson(trajectory_path); 
         }
         catch(IOException e){
-            System.out.println("Failed to get the trajectory of path: " + path_name + "! \n");
+            System.err.println("Failed to get the trajectory of path: " + path_name + "! \n");
             return null;
         }
     }
@@ -67,8 +71,12 @@ public class Ramsete extends SubsystemBase{
             drivetrain::tankDriveVolts, drivetrain
         );
     }
+      
+    public RamseteCommand getRamseteCommand(String path_name){
+        this.path_name = path_name; 
+        path_dir = group_dir + REDIRECT_DIR + path_name + FILE_TYPE;
+        setRamseteCommand();
 
-    public RamseteCommand getRamseteCommand(){
         if(ramsete_command != null){
             return ramsete_command; 
         }

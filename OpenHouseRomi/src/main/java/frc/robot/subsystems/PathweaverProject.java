@@ -45,6 +45,8 @@ public class PathweaverProject extends SubsystemBase {
 
                 break;
             }
+
+            list_index++;
         }
 
         return null;

@@ -13,32 +13,35 @@ import frc.robot.Constants;
 import java.io.IOException;
 import java.nio.file.Path;
 
-// Purpose: Provided a name of a pathweaver path, return a ramsete command
+/* Purpose: Provided a name of a pathweaver path, return a ramsete command.
 
-// NOTE: ALL DIRECTORIES THAT ARE STORED ARE ONLY THE SUB DIRECTORIES OF THE DEPLOY FOLDER! 
-// A COMPLETE DIRECTORY WOULD BE THE DIRECTORY OF THE DEPLOY FOLDER FOLLOWED BY THE DIRECTORY IN QUESTION! 
-// THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
+   NOTE: ALL DIRECTORIES THAT ARE STORED ARE ONLY THE SUB DIRECTORIES OF THE DEPLOY FOLDER! 
+    A COMPLETE DIRECTORY WOULD BE THE DIRECTORY OF THE DEPLOY FOLDER FOLLOWED BY THE DIRECTORY IN QUESTION! 
+   THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
+
+   NOTE: Ramsete.java provides a directory to a .wpilib.json file type from the output of the group in question 
+   For instance:
+   paths -> project_A, project_B, project_C
+   paths\project_A -> Groups, output, Paths, pathweaver.json
+   paths\project_A\Groups ->(files) Group_A, Group_B, Group_C
+   paths\project_A\Groups/Group_A ->(files) A1.path, A2.path, A3.path
+   paths\project_A\output ->(files) A1.wpilib.json, A2.wpilib.json, A3.wpilib.json, ....
+
+   EX:
+   DIR: paths/project_A/Groups/../output/A1.wpilib.json
+   ROOT DIR : .../src/main/deploy -> Is different on a roboRio compared to a computer
+   PROJECT DIR: paths/project_A 
+   GROUP DIR: paths/project_A/Groups -> Where group files are accessed to get path names in order to find the correct files in the output
+*/
 
 public class Ramsete extends SubsystemBase{
     private Drivetrain drivetrain = null; 
     private RamseteCommand ramsete_command = null;
     private final String FILE_TYPE = ".wpilib.json";
     private final String REDIRECT_DIR = "../output/";
-    private String group_dir = "";
+    private String group_dir = "Group directory was not provided! \n";
     private String path_dir = "Path directory was not provided! \n";
     private String path_name = "Path name was not provided! \n";  
-
-    /* Provides a directory to a .wpilib.json file type from the output of the group in question 
-        /   EX:
-        /   paths/Groups -> group_1, group_2, and group_3
-        /
-        /   paths/Groups/group_1/group -> path_A, path_B, and path_C
-        /
-        /   paths/Groups/group_1/group/../output/path_A.wpilib.json
-
-        group dir "path/Groups/ToPort/group/"      "../output/ToPort_1.wpilib.json"
-    */
-    //paths\foward_and_back\Groups\forward = GROUP DIR
 
     public Ramsete(Drivetrain drivetrain, String group_dir){// paths/foward_and_back/Groups/../output/
         this.drivetrain = drivetrain; 
@@ -55,7 +58,7 @@ public class Ramsete extends SubsystemBase{
             return TrajectoryUtil.fromPathweaverJson(trajectory_path); 
         }
         catch(IOException e){
-            System.err.println("Failed to get the trajectory of path: " + path_name + "! \n");
+            System.err.println("Ramsete.java: Exception caught! Failed to get the trajectory of path: " + path_name + "! \n");
             return null;
         }
     }
@@ -81,7 +84,7 @@ public class Ramsete extends SubsystemBase{
             return ramsete_command; 
         }
         else{
-            System.err.println("Could not get the ramsete command of path: " + path_name + "! \n");
+            System.err.println("Ramsete.java: Exception caught! Could not get the ramsete command of path: " + path_name + "! \n");
             return null; 
         }
     }

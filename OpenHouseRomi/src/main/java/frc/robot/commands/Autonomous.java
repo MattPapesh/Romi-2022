@@ -23,8 +23,8 @@ public class Autonomous extends CommandBase
     {
         addRequirements(pathweaver, drivetrain); 
         pathweaver.begin(path_name);
-        drivetrain.resetEncoders();
-        drivetrain.resetGyro();
+        drivetrain.resetEncoders();// IS NOT IMPLEMENTED IN THE NEW FILES YET!!!
+        drivetrain.resetGyro();// NEITHER IS THIS!!!
     
         this.pathweaver = pathweaver; 
         this.drivetrain = drivetrain; 

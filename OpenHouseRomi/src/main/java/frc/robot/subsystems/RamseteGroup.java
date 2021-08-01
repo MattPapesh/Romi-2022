@@ -5,12 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.File; 
-import java.io.InputStream;
 import java.util.LinkedList;
 
-import javax.swing.plaf.basic.BasicComboPopup.ListDataHandler;
+import javax.imageio.IIOException;
 
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,52 +19,62 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
 
 public class RamseteGroup extends SubsystemBase{
-    private final String INITIAL_DIR = "paths/";
+    private final String ROOT_DIR = "deploy/";
     private final String GROUPS = "/Groups/"; 
     private final String FILE_TYPE = ".path"; 
     private String group_dir = "";
     private String group_name = "";
     private String project_dir = "";         // paths/foward_and_back/Groups/
     private Drivetrain drivetrain = null;
-    private Ramsete path_ramsete = null;
+    private Ramsete ramsete = null;
     private LinkedList<RamseteCommand> ramsete_group = null;
-    private LinkedList<String> path_list = null; 
-     
+    private LinkedList<String> path_name_list = null; 
 
     public RamseteGroup(Drivetrain drivetrain, String project_dir, String group_name){
         this.drivetrain = drivetrain; 
+        this.project_dir = project_dir; 
         this.group_name = group_name; 
-        this.project_dir = project_dir;
-        group_dir = INITIAL_DIR + project_dir + GROUPS; 
-        path_ramsete = new Ramsete(drivetrain, group_dir); 
+        group_dir = project_dir + GROUPS + group_name;
+        ramsete = new Ramsete(drivetrain, group_dir);
+        ramsete_group = new LinkedList<RamseteCommand>(); 
+        path_name_list = new LinkedList<String>();
 
-        setPathList(new File("DIR OF GROUP FILE!!!"));
-        setRamseteGroup();
+        setPathList(new File(group_dir));
+        setRamseteGroup(); 
     }
 
+    // Reads group files via a BufferedReader, removes the file type ".path", and stores the remaining names in path_name_list
     private void setPathList(File group_file){
         BufferedReader reader = null;
-        path_list = new LinkedList<String>();
 
         try{
             reader = new BufferedReader(new FileReader(group_file));
         }
         catch(FileNotFoundException e){
-            System.err.println("Could not count the number of paths! \n");
+            System.err.println("RamseteGroup.java: Exception caught! Could not find the group file! \n");
         }
 
         while(true){
             try{
-                path_list.addLast(reader.readLine().replaceAll(FILE_TYPE, ""));
+                path_name_list.addLast(reader.readLine().replaceAll(FILE_TYPE, ""));
             }
             catch(IOException e){
-                break; 
+                break;
             }
+        }
+
+        try{
+            reader.close();
+        }
+        catch(IOException e){
+            System.err.println("RamseteGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
         }
     }
 
     private void setRamseteGroup(){
-        int num_of_paths = 
+        for(int i = 0; i < path_name_list.size(); i++){
+            ramsete_group.addLast(ramsete.getRamseteCommand(path_name_list.get(i))); 
+        }
     }
 
     public LinkedList<RamseteCommand> getRamseteGroup(){
@@ -75,5 +83,13 @@ public class RamseteGroup extends SubsystemBase{
 
     public String getRamseteGroupName(){
         return group_name; 
+    }
+
+    public String getProjectDirectory(){
+        return project_dir; 
+    }
+
+    public String getGroupDirectory(){
+        return group_dir; 
     }
 }

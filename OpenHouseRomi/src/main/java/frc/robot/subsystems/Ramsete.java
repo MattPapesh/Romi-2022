@@ -29,7 +29,7 @@ import java.nio.file.Path;
 
    EX:
    DIR: paths/project_A/Groups/../output/A1.wpilib.json
-   ROOT DIR : .../src/main/deploy -> Is different on a roboRio compared to a computer
+   ROOT DIR: .../src/main/deploy -> Is different on a roboRIO and Romi compared to a computer
    PROJECT DIR: paths/project_A 
    GROUP DIR: paths/project_A/Groups -> Where group files are accessed to get path names in order to find the correct files in the output
 */
@@ -84,7 +84,7 @@ public class Ramsete extends SubsystemBase{
             return ramsete_command; 
         }
         else{
-            System.err.println("Ramsete.java: Exception caught! Could not get the ramsete command of path: " + path_name + "! \n");
+            System.err.println("Ramsete.java: Warning! Could not get the ramsete command of path: " + path_name + "! \n");
             return null; 
         }
     }

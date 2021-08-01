@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.File; 
 import java.util.LinkedList;
 
-import javax.imageio.IIOException;
-
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,32 +17,31 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
 
 public class RamseteGroup extends SubsystemBase{
-    private final String ROOT_DIR = "deploy/";
     private final String GROUPS = "/Groups/"; 
     private final String FILE_TYPE = ".path"; 
     private String group_dir = "";
     private String group_name = "";
-    private String project_dir = "";         // paths/foward_and_back/Groups/
-    private Drivetrain drivetrain = null;
+    private String project_dir = "";         
+    //private Drivetrain drivetrain = null;
     private Ramsete ramsete = null;
-    private LinkedList<RamseteCommand> ramsete_group = null;
+    private LinkedList<RamseteCommand> ramsete_command_group = null;
     private LinkedList<String> path_name_list = null; 
 
     public RamseteGroup(Drivetrain drivetrain, String project_dir, String group_name){
-        this.drivetrain = drivetrain; 
+        //this.drivetrain = drivetrain; 
         this.project_dir = project_dir; 
         this.group_name = group_name; 
         group_dir = project_dir + GROUPS + group_name;
         ramsete = new Ramsete(drivetrain, group_dir);
-        ramsete_group = new LinkedList<RamseteCommand>(); 
+        ramsete_command_group = new LinkedList<RamseteCommand>(); 
         path_name_list = new LinkedList<String>();
 
-        setPathList(new File(group_dir));
+        setPathNameList(new File(group_dir));
         setRamseteGroup(); 
     }
 
     // Reads group files via a BufferedReader, removes the file type ".path", and stores the remaining names in path_name_list
-    private void setPathList(File group_file){
+    private void setPathNameList(File group_file){
         BufferedReader reader = null;
 
         try{
@@ -73,12 +70,18 @@ public class RamseteGroup extends SubsystemBase{
 
     private void setRamseteGroup(){
         for(int i = 0; i < path_name_list.size(); i++){
-            ramsete_group.addLast(ramsete.getRamseteCommand(path_name_list.get(i))); 
+            ramsete_command_group.addLast(ramsete.getRamseteCommand(path_name_list.get(i))); 
         }
     }
 
-    public LinkedList<RamseteCommand> getRamseteGroup(){
-        return ramsete_group; 
+    public LinkedList<RamseteCommand> getRamseteCommandGroup(){
+        if (ramsete_command_group != null){
+            return ramsete_command_group; 
+        }
+        else{
+            System.err.println("RamseteGroup.java: Warning! A ramsete command group wasn't returned! \n");
+            return null;
+        }
     }
 
     public String getRamseteGroupName(){

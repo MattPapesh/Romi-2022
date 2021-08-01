@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 
-import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Purpose: Create a pathweaver project that can possess groups of ramsete commands derived from the project's path groups
@@ -19,44 +16,29 @@ public class PathweaverProject extends SubsystemBase {
     private String project_name = "";
     private String project_dir = ""; 
     private LinkedList<RamseteGroup> ramsete_group_list = null;
-    private Drivetrain drivetrain = null; 
+    //private Drivetrain drivetrain = null; 
 
     PathweaverProject(Drivetrain drivetrain, String project_name){
         this.project_name = project_name; 
-        this.drivetrain = drivetrain; 
+        //this.drivetrain = drivetrain; 
         project_dir = INITIAL_DIR + project_name; 
         ramsete_group_list = new LinkedList<RamseteGroup>();
-        
     }
 
-    public RamseteGroup getRamseteGroup_v2(String group_name){
-        return new RamseteGroup(drivetrain, group_name);
-    }
-
-    public RamseteGroup getRamseteGroup(String group_name){
+    public LinkedList<RamseteCommand> getRamseteCommandList(String group_name){
+        RamseteGroup current_ramsete_group = null;
         int list_index = 0; 
         
-        while(true){
-            try{
-                RamseteGroup current_ramsete_group = ramsete_group_list.get(list_index);
+        for(int i = 0; i < ramsete_group_list.size(); i++){
+            
+            current_ramsete_group = ramsete_group_list.get(list_index);
 
-                if(current_ramsete_group.getRamseteGroupName() == group_name){
-                    return current_ramsete_group;
-                }
-            }
-            catch(IndexOutOfBoundsException e){
-                if(list_index == 0){
-                    System.err.println(
-                        "PathweaverProject.java: Exception caught! RamseteGroup: \"" + group_name + "\" could not be found!"
-                    );
-                }
-
-                break;
-            }
-
-            list_index++;
+            if(current_ramsete_group.getRamseteGroupName() == group_name){
+                return current_ramsete_group.getRamseteCommandGroup();
+            } 
         }
 
+        System.err.println("PathweaverProject.java: Warning! A ramsete command list wasn't returned! \n");
         return null;
     }
 

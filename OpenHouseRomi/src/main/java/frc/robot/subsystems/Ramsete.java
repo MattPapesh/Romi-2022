@@ -34,21 +34,18 @@ import java.nio.file.Path;
    GROUP DIR: paths/project_A/Groups -> Where group files are accessed to get path names in order to find the correct files in the output
 */
 
-public class Ramsete extends SubsystemBase{
+public class Ramsete extends SubsystemBase {
     private Drivetrain drivetrain = null; 
     private RamseteCommand ramsete_command = null;
     private final String FILE_TYPE = ".wpilib.json";
-    private final String REDIRECT_DIR = "../output/";
-    private String group_dir = "Group directory was not provided! \n";
+    private final String REDIRECT_DIR = "/../../output/";
+    private String group_dir = "";
     private String path_dir = "Path directory was not provided! \n";
     private String path_name = "Path name was not provided! \n";  
 
-    public Ramsete(Drivetrain drivetrain, String group_dir){// paths/foward_and_back/Groups/../output/
+    public Ramsete(Drivetrain drivetrain, String group_dir){
         this.drivetrain = drivetrain; 
         this.group_dir = group_dir; 
-        
-        path_dir = group_dir + REDIRECT_DIR; 
-        // Is only a rough idea where thr path is located. A path name is needed to complete the directory
     }
 
     private Trajectory getTrajectory(){

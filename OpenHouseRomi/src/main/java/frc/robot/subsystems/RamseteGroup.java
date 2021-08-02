@@ -16,19 +16,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // A COMPLETE DIRECTORY WOULD BE THE DIRECTORY OF THE DEPLOY FOLDER FOLLOWED BY THE DIRECTORY IN QUESTION! 
 // THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
 
-public class RamseteGroup extends SubsystemBase{
+public class RamseteGroup extends SubsystemBase {
     private final String GROUPS = "/Groups/"; 
     private final String FILE_TYPE = ".path"; 
     private String group_dir = "";
     private String group_name = "";
     private String project_dir = "";         
-    //private Drivetrain drivetrain = null;
     private Ramsete ramsete = null;
     private LinkedList<RamseteCommand> ramsete_command_group = null;
     private LinkedList<String> path_name_list = null; 
 
     public RamseteGroup(Drivetrain drivetrain, String project_dir, String group_name){
-        //this.drivetrain = drivetrain; 
         this.project_dir = project_dir; 
         this.group_name = group_name; 
         group_dir = project_dir + GROUPS + group_name;
@@ -36,16 +34,19 @@ public class RamseteGroup extends SubsystemBase{
         ramsete_command_group = new LinkedList<RamseteCommand>(); 
         path_name_list = new LinkedList<String>();
 
-        setPathNameList(new File(group_dir));
-        setRamseteGroup(); 
+        try{
+            setPathNameList(new File(group_dir));
+            setRamseteCommandGroup(); 
+        }
+        catch(NullPointerException e){}
     }
 
     // Reads group files via a BufferedReader, removes the file type ".path", and stores the remaining names in path_name_list
     private void setPathNameList(File group_file){
-        BufferedReader reader = null;
+        BufferedReader buffered_reader = null;
 
         try{
-            reader = new BufferedReader(new FileReader(group_file));
+            buffered_reader = new BufferedReader(new FileReader(group_file));
         }
         catch(FileNotFoundException e){
             System.err.println("RamseteGroup.java: Exception caught! Could not find the group file! \n");
@@ -53,7 +54,7 @@ public class RamseteGroup extends SubsystemBase{
 
         while(true){
             try{
-                path_name_list.addLast(reader.readLine().replaceAll(FILE_TYPE, ""));
+                path_name_list.addLast(buffered_reader.readLine().replaceAll(FILE_TYPE, ""));
             }
             catch(IOException e){
                 break;
@@ -61,14 +62,14 @@ public class RamseteGroup extends SubsystemBase{
         }
 
         try{
-            reader.close();
+            buffered_reader.close();
         }
         catch(IOException e){
             System.err.println("RamseteGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
         }
     }
 
-    private void setRamseteGroup(){
+    private void setRamseteCommandGroup(){
         for(int i = 0; i < path_name_list.size(); i++){
             ramsete_command_group.addLast(ramsete.getRamseteCommand(path_name_list.get(i))); 
         }

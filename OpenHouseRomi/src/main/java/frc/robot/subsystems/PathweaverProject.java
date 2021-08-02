@@ -15,29 +15,21 @@ public class PathweaverProject extends SubsystemBase {
     private final String INITIAL_DIR = "paths/";
     private String project_name = "";
     private String project_dir = ""; 
-    private LinkedList<RamseteGroup> ramsete_group_list = null;
-    //private Drivetrain drivetrain = null; 
+    private Drivetrain drivetrain = null; 
 
     PathweaverProject(Drivetrain drivetrain, String project_name){
         this.project_name = project_name; 
-        //this.drivetrain = drivetrain; 
+        this.drivetrain = drivetrain; 
         project_dir = INITIAL_DIR + project_name; 
-        ramsete_group_list = new LinkedList<RamseteGroup>();
     }
 
-    public LinkedList<RamseteCommand> getRamseteCommandList(String group_name){
-        RamseteGroup current_ramsete_group = null;
-        int list_index = 0; 
-        
-        for(int i = 0; i < ramsete_group_list.size(); i++){
-            
-            current_ramsete_group = ramsete_group_list.get(list_index);
+    public LinkedList<RamseteCommand> getRamseteCommandGroup(String group_name){
+        RamseteGroup ramsete_group = new RamseteGroup(drivetrain, project_dir, group_name);
 
-            if(current_ramsete_group.getRamseteGroupName() == group_name){
-                return current_ramsete_group.getRamseteCommandGroup();
-            } 
+        if (ramsete_group.getRamseteCommandGroup() != null){
+            return ramsete_group.getRamseteCommandGroup();
         }
-
+        
         System.err.println("PathweaverProject.java: Warning! A ramsete command list wasn't returned! \n");
         return null;
     }

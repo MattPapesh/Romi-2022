@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File; 
 import java.util.LinkedList;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -16,33 +17,46 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // A COMPLETE DIRECTORY WOULD BE THE DIRECTORY OF THE DEPLOY FOLDER FOLLOWED BY THE DIRECTORY IN QUESTION! 
 // THIS GOES FOR ALL PATHWEAVER AND RAMSETE RELATED SUBSYSTEMS. 
 
-public class RamseteGroup extends SubsystemBase {
+public class PathGroup extends SubsystemBase {
+    private class pathInfo{
+        public RamseteCommand ramsete_command = null;
+        public Pose2d trajectorial_initial_pose = null;
+        
+        pathInfo(RamseteCommand ramsete_command, Pose2d trajectorial_initial_pose){
+            this.ramsete_command = ramsete_command;
+            this.trajectorial_initial_pose = trajectorial_initial_pose; 
+        }
+    };
+    
     private final String GROUPS = "/Groups/"; 
     private final String FILE_TYPE = ".path"; 
     private String group_dir = "";
     private String group_name = "";
     private String project_dir = "";         
-    private Ramsete ramsete = null;
-    private LinkedList<RamseteCommand> ramsete_command_group = null;
-    private LinkedList<String> path_name_list = null; 
+    private PathSet ramsete = null;
+    private LinkedList<pathInfo> path_info_list = null; 
 
-    public RamseteGroup(Drivetrain drivetrain, String project_dir, String group_name){
+    public PathGroup(Drivetrain drivetrain, String project_dir, String group_name){
         this.project_dir = project_dir; 
         this.group_name = group_name; 
         group_dir = project_dir + GROUPS + group_name;
-        ramsete = new Ramsete(drivetrain, group_dir);
-        ramsete_command_group = new LinkedList<RamseteCommand>(); 
-        path_name_list = new LinkedList<String>();
+        ramsete = new PathSet(drivetrain, group_dir);
+        path_info_list = new LinkedList<pathInfo>(); 
 
         try{
-            setPathNameList(new File(group_dir));
-            setRamseteCommandGroup(); 
+            LinkedList<String> path_name_list = setPathNameList(new File(group_dir));
+            
+            for(int i = 0; i < path_name_list.size(); i++){
+                ramsete.setPath(path_name_list.get(i));
+                path_info_list.addLast(new pathInfo(ramsete.getRamseteCommand(), ramsete.getTrajectorialInitialPose()));
+            }
         }
         catch(NullPointerException e){}
     }
 
     // Reads group files via a BufferedReader, removes the file type ".path", and stores the remaining names in path_name_list
-    private void setPathNameList(File group_file){
+    private LinkedList<String> setPathNameList(File group_file){
+        LinkedList<String> path_name_list = new LinkedList<String>(); 
         BufferedReader buffered_reader = null;
 
         try{
@@ -67,22 +81,28 @@ public class RamseteGroup extends SubsystemBase {
         catch(IOException e){
             System.err.println("RamseteGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
         }
+
+        return path_name_list;
     }
 
-    private void setRamseteCommandGroup(){
-        for(int i = 0; i < path_name_list.size(); i++){
-            ramsete_command_group.addLast(ramsete.getRamseteCommand(path_name_list.get(i))); 
+    public RamseteCommand getRamseteCommand(int path_index){
+        RamseteCommand ramsete_command = path_info_list.get(path_index).ramsete_command;
+        
+        if (ramsete_command == null){
+            System.err.println("RamseteGroup.java: Warning! A ramsete command wasn't returned! \n");
         }
+        
+        return ramsete_command; 
     }
 
-    public LinkedList<RamseteCommand> getRamseteCommandGroup(){
-        if (ramsete_command_group != null){
-            return ramsete_command_group; 
+    public Pose2d getTrajectorialInitialPose(int path_index){
+        Pose2d pose = path_info_list.get(path_index).trajectorial_initial_pose;
+
+        if(pose == null){
+            System.err.println("RamseteGroup.java: Warning! A pose wasn't returned! \n");
         }
-        else{
-            System.err.println("RamseteGroup.java: Warning! A ramsete command group wasn't returned! \n");
-            return null;
-        }
+
+        return pose; 
     }
 
     public String getRamseteGroupName(){

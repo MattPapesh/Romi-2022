@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
-import java.util.LinkedList;
-
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -17,21 +16,20 @@ public class PathweaverProject extends SubsystemBase {
     private String project_dir = ""; 
     private Drivetrain drivetrain = null; 
 
-    PathweaverProject(Drivetrain drivetrain, String project_name){
+    public PathweaverProject(Drivetrain drivetrain, String project_name){
         this.project_name = project_name; 
         this.drivetrain = drivetrain; 
         project_dir = INITIAL_DIR + project_name; 
     }
 
-    public LinkedList<RamseteCommand> getRamseteCommandGroup(String group_name){
-        RamseteGroup ramsete_group = new RamseteGroup(drivetrain, project_dir, group_name);
+    public RamseteCommand getRamseteCommand(String group_name, int path_index){
+        PathGroup ramsete_group = new PathGroup(drivetrain, project_dir, group_name);
+        return ramsete_group.getRamseteCommand(path_index);
+    }
 
-        if (ramsete_group.getRamseteCommandGroup() != null){
-            return ramsete_group.getRamseteCommandGroup();
-        }
-        
-        System.err.println("PathweaverProject.java: Warning! A ramsete command list wasn't returned! \n");
-        return null;
+    public Pose2d getTrajectorialInitialPose(String group_name, int path_index){
+        PathGroup ramsete_group = new PathGroup(drivetrain, project_dir, group_name);
+        return ramsete_group.getTrajectorialInitialPose(path_index);
     }
 
     public String getProjectName(){

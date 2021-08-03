@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,16 +35,15 @@ import java.nio.file.Path;
    GROUP DIR: paths/project_A/Groups -> Where group files are accessed to get path names in order to find the correct files in the output
 */
 
-public class Ramsete extends SubsystemBase {
+public class PathSet extends SubsystemBase {
     private Drivetrain drivetrain = null; 
-    private RamseteCommand ramsete_command = null;
     private final String FILE_TYPE = ".wpilib.json";
     private final String REDIRECT_DIR = "/../../output/";
     private String group_dir = "";
     private String path_dir = "Path directory was not provided! \n";
     private String path_name = "Path name was not provided! \n";  
 
-    public Ramsete(Drivetrain drivetrain, String group_dir){
+    public PathSet(Drivetrain drivetrain, String group_dir){
         this.drivetrain = drivetrain; 
         this.group_dir = group_dir; 
     }
@@ -60,8 +60,13 @@ public class Ramsete extends SubsystemBase {
         }
     }
 
-    private void setRamseteCommand(){
-        ramsete_command = new RamseteCommand(
+    public void setPath(String path_name){
+        this.path_name = path_name;
+        path_dir = group_dir + REDIRECT_DIR + path_name + FILE_TYPE; 
+    }
+      
+    public RamseteCommand getRamseteCommand(){
+        return new RamseteCommand(
             getTrajectory(), drivetrain::getPose, 
             new RamseteController(Constants.Autonomous.kRamseteB, Constants.Autonomous.kRamseteZeta),
             new SimpleMotorFeedforward(Constants.Drive.ksVolts, Constants.Drive.kvVoltSecsPerMeter, Constants.Drive.kaVoltSecsPerMeterSquared),
@@ -71,19 +76,9 @@ public class Ramsete extends SubsystemBase {
             drivetrain::tankDriveVolts, drivetrain
         );
     }
-      
-    public RamseteCommand getRamseteCommand(String path_name){
-        this.path_name = path_name; 
-        path_dir = group_dir + REDIRECT_DIR + path_name + FILE_TYPE;
-        setRamseteCommand();
 
-        if(ramsete_command != null){
-            return ramsete_command; 
-        }
-        else{
-            System.err.println("Ramsete.java: Warning! Could not get the ramsete command of path: " + path_name + "! \n");
-            return null; 
-        }
+    public Pose2d getTrajectorialInitialPose(){
+        return getTrajectory().getInitialPose();
     }
 
     public String getGroupDir(){

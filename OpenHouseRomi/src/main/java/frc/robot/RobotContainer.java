@@ -103,7 +103,6 @@ public class RobotContainer {
     .andThen(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 1));}, m_drivetrain)
     .andThen(m_pathweaver_project.getRamseteCommand("foward", 1)
     .andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain))));
-
   }
 
   /**

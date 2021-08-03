@@ -64,7 +64,7 @@ public class PathGroup extends SubsystemBase {
             buffered_reader = new BufferedReader(new FileReader(group_file));
         }
         catch(FileNotFoundException e){
-            System.err.println("RamseteGroup.java: Exception caught! Could not find the group file! \n");
+            System.err.println("PathGroup.java: Exception caught! Could not find the group file! \n");
         }
 
        // while(true){
@@ -81,7 +81,7 @@ public class PathGroup extends SubsystemBase {
             buffered_reader.close();
         }
         catch(IOException e){
-            System.err.println("RamseteGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
+            System.err.println("PathGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
         }
 
         return path_name_list;
@@ -91,7 +91,7 @@ public class PathGroup extends SubsystemBase {
         RamseteCommand ramsete_command = path_info_list.get(path_index).ramsete_command;
         
         if (ramsete_command == null){
-            System.err.println("RamseteGroup.java: Warning! A ramsete command wasn't returned! \n");
+            System.err.println("PathGroup.java: Warning! A ramsete command wasn't returned! \n");
         }
         
         return ramsete_command; 
@@ -101,7 +101,7 @@ public class PathGroup extends SubsystemBase {
         Pose2d pose = path_info_list.get(path_index).trajectorial_initial_pose;
 
         if(pose == null){
-            System.err.println("RamseteGroup.java: Warning! A pose wasn't returned! \n");
+            System.err.println("PathGroup.java: Warning! A pose wasn't returned! \n");
         }
 
         return pose; 

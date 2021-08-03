@@ -107,6 +107,10 @@ public class PathGroup extends SubsystemBase {
         return pose; 
     }
 
+    public int getSize(){
+        return path_info_list().size(); 
+    }
+
     public String getRamseteGroupName(){
         return group_name; 
     }

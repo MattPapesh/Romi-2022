@@ -23,13 +23,18 @@ public class PathweaverProject extends SubsystemBase {
     }
 
     public RamseteCommand getRamseteCommand(String group_name, int path_index){
-        PathGroup ramsete_group = new PathGroup(drivetrain, project_dir, group_name);
-        return ramsete_group.getRamseteCommand(path_index);
+        PathGroup path_group = new PathGroup(drivetrain, project_dir, group_name);
+        return path_group.getRamseteCommand(path_index);
     }
 
     public Pose2d getTrajectorialInitialPose(String group_name, int path_index){
-        PathGroup ramsete_group = new PathGroup(drivetrain, project_dir, group_name);
-        return ramsete_group.getTrajectorialInitialPose(path_index);
+        PathGroup path_group = new PathGroup(drivetrain, project_dir, group_name);
+        return path_group.getTrajectorialInitialPose(path_index);
+    }
+
+    public int getGroupSize(String group_name){
+        PathGroup path_group = new PathGroup(drivetrain, project_dir, group_name); 
+        return path_group.getSize(); 
     }
 
     public String getProjectName(){

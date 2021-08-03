@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File; 
 import java.util.LinkedList;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,8 +44,8 @@ public class PathGroup extends SubsystemBase {
         ramsete = new PathSet(drivetrain, group_dir);
         path_info_list = new LinkedList<pathInfo>(); 
 
-        try{
-            LinkedList<String> path_name_list = setPathNameList(new File(group_dir));
+        try{//FIX THIS FILE!!!!
+            LinkedList<String> path_name_list = setPathNameList(new File(Filesystem.getDeployDirectory() + "/" + group_dir));
             
             for(int i = 0; i < path_name_list.size(); i++){
                 ramsete.setPath(path_name_list.get(i));
@@ -66,14 +67,15 @@ public class PathGroup extends SubsystemBase {
             System.err.println("RamseteGroup.java: Exception caught! Could not find the group file! \n");
         }
 
-        while(true){
+       // while(true){
             try{
+                path_name_list.addLast(buffered_reader.readLine().replaceAll(FILE_TYPE, ""));
                 path_name_list.addLast(buffered_reader.readLine().replaceAll(FILE_TYPE, ""));
             }
             catch(IOException e){
-                break;
+               // break;
             }
-        }
+        //}
 
         try{
             buffered_reader.close();

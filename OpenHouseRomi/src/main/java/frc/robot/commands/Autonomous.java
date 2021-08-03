@@ -47,5 +47,7 @@ public class Autonomous extends CommandBase
         drivetrain.resetOdometry(pathweaver.getTrajectory().getInitialPose()); 
         return new InstantCommand(() -> {drivetrain.resetOdometry(pathweaver.getTrajectory().getInitialPose());}, drivetrain)
         .andThen(ramsete_command)
-        .andThen(new InstantCommand(() -> {drivetrain.tankDriveVolts(0, 0);}, drivetrain)); }
+        .andThen(new InstantCommand(() -> {drivetrain.tankDriveVolts(0, 0);}, drivetrain)); 
+    }
 }
+

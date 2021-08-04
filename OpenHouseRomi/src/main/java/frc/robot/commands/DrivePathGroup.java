@@ -9,37 +9,31 @@ import java.util.LinkedList;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 
-public class DrivePathGroup extends CommandBase{
+public class DrivePathGroup extends SequentialCommandGroup{
     private Drivetrain drivetrain = null; 
     private PathweaverProject pathweaver_project = null; 
     private LinkedList<SequentialCommandGroup> sequential_command_list = null; 
 
     public DrivePathGroup(Drivetrain drivetrain, PathweaverProject pathweaver_project, String group_name){
-       addRequirements(drivetrain, pathweaver_project);
-       this.drivetrain = drivetrain; 
-       this.pathweaver_project = pathweaver_project;
-       sequential_command_list = getSequentialCommandList(group_name);
+        addRequirements(drivetrain, pathweaver_project);
+        this.drivetrain = drivetrain; 
+        this.pathweaver_project = pathweaver_project;
+       
+        addPathCommands(group_name);
     }
 
-    private LinkedList<SequentialCommandGroup> getSequentialCommandList(String group_name){
-        LinkedList<SequentialCommandGroup> sequential_command_list = new LinkedList<SequentialCommandGroup>();
+    private void addPathCommands(String group_name){
 
         for(int i = 0; i < pathweaver_project.getGroupSize(group_name); i++){
             Pose2d pose = pathweaver_project.getTrajectorialInitialPose(group_name, i);
             drivetrain.resetOdometry(pose);
            
-            sequential_command_list.addLast(
+            addCommands(
                 new InstantCommand(
-                    () -> {drivetrain.resetOdometry(pose);}, drivetrain)
+                    () -> {drivetrain.resetOdometry(pose); System.out.println("Got command! \n");}, drivetrain)
                     .andThen(pathweaver_project.getRamseteCommand(group_name, i))
                     .andThen(new InstantCommand(() -> {drivetrain.tankDriveVolts(0, 0);}))
             );
         }
-
-        return sequential_command_list; 
-    }
-
-    public Command getPathGroupCommand(int index){
-        return sequential_command_list.get(index);
     }
 }

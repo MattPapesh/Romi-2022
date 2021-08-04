@@ -55,7 +55,7 @@ public class PathSet extends SubsystemBase {
             return TrajectoryUtil.fromPathweaverJson(trajectory_path); 
         }
         catch(IOException e){
-            System.err.println("PathSet.java: Exception caught! Failed to get the trajectory of path: " + path_name + "! \n");
+            System.err.println("PathSet.java: Exception caught! Failed to get the trajectory of path_name: " + path_name + "! \n");
             return null;
         }
     }

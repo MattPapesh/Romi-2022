@@ -87,7 +87,8 @@ public class RobotContainer {
     //return m_chooser.getSelected(); 
 
     DrivePathGroup obj = new DrivePathGroup(m_drivetrain, new PathweaverProject(m_drivetrain, "foward_and_back"), "foward");
-    return obj.getPathGroupCommand(0);
+    return obj;
+    //return obj.getPathGroupCommand(1);
 
 
     //System.out.println("Getting auto command \n");

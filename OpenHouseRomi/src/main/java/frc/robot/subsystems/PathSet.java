@@ -48,7 +48,7 @@ public class PathSet extends SubsystemBase {
         this.group_dir = group_dir; 
     }
 
-    private Trajectory getTrajectory(){System.out.println("PATH DIR: " + path_dir);
+    private Trajectory getTrajectory(){
         Path trajectory_path = Filesystem.getDeployDirectory().toPath().resolve(path_dir);
 
         try{

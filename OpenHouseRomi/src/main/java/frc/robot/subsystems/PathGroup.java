@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.File; 
 import java.util.LinkedList;
+import java.util.Scanner; 
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -45,7 +43,7 @@ public class PathGroup extends SubsystemBase {
         path_info_list = new LinkedList<pathInfo>(); 
 
         try{//FIX THIS FILE!!!!
-            LinkedList<String> path_name_list = setPathNameList(new File(Filesystem.getDeployDirectory() + "/" + group_dir));
+            LinkedList<String> path_name_list = getPathNameList(new File(Filesystem.getDeployDirectory() + "/" + group_dir));
             
             for(int i = 0; i < path_name_list.size(); i++){
                 ramsete.setPath(path_name_list.get(i));
@@ -56,34 +54,22 @@ public class PathGroup extends SubsystemBase {
     }
 
     // Reads group files via a BufferedReader, removes the file type ".path", and stores the remaining names in path_name_list
-    private LinkedList<String> setPathNameList(File group_file){
-        LinkedList<String> path_name_list = new LinkedList<String>(); 
-        BufferedReader buffered_reader = null;
-
+    private LinkedList<String> getPathNameList(File group_file){
+        LinkedList<String> path_name_list = new LinkedList<String>();
+        Scanner scanner = null; 
+        
         try{
-            buffered_reader = new BufferedReader(new FileReader(group_file));
+            scanner = new Scanner(group_file);
         }
         catch(FileNotFoundException e){
             System.err.println("PathGroup.java: Exception caught! Could not find the group file! \n");
         }
 
-       // while(true){
-            try{
-                path_name_list.addLast(buffered_reader.readLine().replaceAll(FILE_TYPE, ""));
-                path_name_list.addLast(buffered_reader.readLine().replaceAll(FILE_TYPE, ""));
-            }
-            catch(IOException e){
-               // break;
-            }
-        //}
-
-        try{
-            buffered_reader.close();
-        }
-        catch(IOException e){
-            System.err.println("PathGroup.java: Exception caught! BufferedReader caught an IOException when closing! \n");
+        while(scanner.hasNext()){
+            path_name_list.addLast(scanner.nextLine().replaceAll(FILE_TYPE, ""));
         }
 
+        scanner.close();
         return path_name_list;
     }
 

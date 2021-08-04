@@ -9,16 +9,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import frc.robot.commands.ArcadeDrive;
-//import frc.robot.commands.Autonomous;
+import frc.robot.commands.DrivePathGroup;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.PathweaverProject;
-//import frc.robot.subsystems.pathweaver;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
@@ -30,9 +28,9 @@ import edu.wpi.first.wpilibj2.command.button.Button;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drivetrain m_drivetrain = new Drivetrain();
+  private static final Drivetrain m_drivetrain = new Drivetrain();
   //private final pathweaver m_pathweaver = new pathweaver(); 
-  private final PathweaverProject m_pathweaver_project = new PathweaverProject(m_drivetrain, "foward_and_back"); 
+
   private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);
 
   // Assumes a gamepad plugged into channnel 0
@@ -88,20 +86,26 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     //return m_chooser.getSelected(); 
 
+    DrivePathGroup obj = new DrivePathGroup(m_drivetrain, new PathweaverProject(m_drivetrain, "foward_and_back"), "foward");
+    return obj.getPathGroupCommand(0);
+
+
     //System.out.println("Getting auto command \n");
    // Autonomous autonomous = new Autonomous(m_drivetrain, m_pathweaver, Constants.Autonomous.autonomous_path); 
     //return autonomous.getAutonomousCommand(); 
 
     //RamseteCommand ramsete_command1 = m_pathweaver_project.getRamseteCommand("foward", 0);
-    Pose2d pose1 = m_pathweaver_project.getTrajectorialInitialPose("foward", 0);
-    m_drivetrain.resetOdometry(pose1);
+    //Pose2d pose1 = m_pathweaver_project.getTrajectorialInitialPose("foward", 0);
+    //m_drivetrain.resetOdometry(pose1);
 
-    return new InstantCommand(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 0));}, m_drivetrain)
-    .andThen(m_pathweaver_project.getRamseteCommand("foward", 0)
-    .andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain))
-    .andThen(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 1));}, m_drivetrain)
-    .andThen(m_pathweaver_project.getRamseteCommand("foward", 1)
-    .andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain))));
+
+
+    //return new InstantCommand(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 0));}, m_drivetrain)
+    //.andThen(m_pathweaver_project.getRamseteCommand("foward", 0)
+    //.andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain)));
+    //.andThen(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 1));}, m_drivetrain)
+    //.andThen(m_pathweaver_project.getRamseteCommand("foward", 1)
+    //.andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain))));
   }
 
   /**

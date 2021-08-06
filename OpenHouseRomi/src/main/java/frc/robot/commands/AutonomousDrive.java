@@ -9,31 +9,36 @@ import java.util.LinkedList;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 
-public class DrivePathGroup extends SequentialCommandGroup{
-    private Drivetrain drivetrain = null; 
-    private PathweaverProject pathweaver_project = null; 
-    private LinkedList<SequentialCommandGroup> sequential_command_list = null; 
+// Purpose: Utilize pathweaver related subsystems to autonmously drive a group of paths of a pathweaver project given a group name
 
-    public DrivePathGroup(Drivetrain drivetrain, PathweaverProject pathweaver_project, String group_name){
-        addRequirements(drivetrain, pathweaver_project);
+public class AutonomousDrive{
+    private Drivetrain drivetrain = null; 
+    private PathweaverProject pathweaver_project = null;   
+
+    public AutonomousDrive(Drivetrain drivetrain, PathweaverProject pathweaver_project){
         this.drivetrain = drivetrain; 
-        this.pathweaver_project = pathweaver_project;
-       
-        addPathCommands(group_name);
+        this.pathweaver_project = pathweaver_project; 
     }
 
-    private void addPathCommands(String group_name){
+    public SequentialCommandGroup getPathGroupCommand(String group_name){
+        SequentialCommandGroup path_group_command = new SequentialCommandGroup();
+        path_group_command.addRequirements(drivetrain, pathweaver_project);
+
+        drivetrain.resetEncoders();//needed?
+        drivetrain.resetGyro();
 
         for(int i = 0; i < pathweaver_project.getGroupSize(group_name); i++){
             Pose2d pose = pathweaver_project.getTrajectorialInitialPose(group_name, i);
-            drivetrain.resetOdometry(pose);
+            drivetrain.resetOdometry(pose);//needed?
            
-            addCommands(
+            path_group_command.addCommands(
                 new InstantCommand(
                     () -> {drivetrain.resetOdometry(pose); System.out.println("Got command! \n");}, drivetrain)
                     .andThen(pathweaver_project.getRamseteCommand(group_name, i))
                     .andThen(new InstantCommand(() -> {drivetrain.tankDriveVolts(0, 0);}))
             );
         }
+
+        return path_group_command;
     }
 }

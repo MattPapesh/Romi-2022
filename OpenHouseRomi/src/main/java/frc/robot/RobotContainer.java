@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.DrivePathGroup;
+import frc.robot.commands.AutonomousDrive;
+import frc.robot.commands.Routine;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.PathweaverProject;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
 /**
@@ -26,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer { 
   // The robot's subsystems and commands are defined here...
   private static final Drivetrain m_drivetrain = new Drivetrain();
   //private final pathweaver m_pathweaver = new pathweaver(); 
@@ -38,7 +40,7 @@ public class RobotContainer {
 
   // Create SmartDashboard chooser for autonomous routines
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
-
+  
   // NOTE: The I/O pin functionality of the 5 exposed I/O pins depends on the hardware "overlay"
   // that is specified when launching the wpilib-ws server on the Romi raspberry pi.
   // By default, the following are available (listed in order from inside of the board to outside):
@@ -86,27 +88,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     //return m_chooser.getSelected(); 
 
-    DrivePathGroup obj = new DrivePathGroup(m_drivetrain, new PathweaverProject(m_drivetrain, "foward_and_back"), "foward");
+    AutonomousDrive obj = new AutonomousDrive(m_drivetrain, new PathweaverProject(m_drivetrain, "foward_and_back"), "foward");
     return obj;
-    //return obj.getPathGroupCommand(1);
-
-
-    //System.out.println("Getting auto command \n");
-   // Autonomous autonomous = new Autonomous(m_drivetrain, m_pathweaver, Constants.Autonomous.autonomous_path); 
-    //return autonomous.getAutonomousCommand(); 
-
-    //RamseteCommand ramsete_command1 = m_pathweaver_project.getRamseteCommand("foward", 0);
-    //Pose2d pose1 = m_pathweaver_project.getTrajectorialInitialPose("foward", 0);
-    //m_drivetrain.resetOdometry(pose1);
-
-
-
-    //return new InstantCommand(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 0));}, m_drivetrain)
-    //.andThen(m_pathweaver_project.getRamseteCommand("foward", 0)
-    //.andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain)));
-    //.andThen(() -> {m_drivetrain.resetOdometry(m_pathweaver_project.getTrajectorialInitialPose("foward", 1));}, m_drivetrain)
-    //.andThen(m_pathweaver_project.getRamseteCommand("foward", 1)
-    //.andThen(new InstantCommand(() -> {m_drivetrain.tankDriveVolts(0, 0);}, m_drivetrain))));
   }
 
   /**

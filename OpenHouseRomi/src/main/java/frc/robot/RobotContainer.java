@@ -9,17 +9,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.AutonomousDrive;
-import frc.robot.commands.Routine;
+import frc.robot.commands.Autonomous;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
-import frc.robot.subsystems.PathweaverProject;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
 /**
@@ -86,10 +83,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    //return m_chooser.getSelected(); 
-
-    AutonomousDrive obj = new AutonomousDrive(m_drivetrain, new PathweaverProject(m_drivetrain, "foward_and_back"), "foward");
-    return obj;
+    return new Autonomous(m_drivetrain, Constants.Autonomous.autonomous_routine); 
   }
 
   /**

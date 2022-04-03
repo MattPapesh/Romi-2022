@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.Autonomous;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.DrivetrainRomi;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
  */
 public class RobotContainer { 
   // The robot's subsystems and commands are defined here...
-  private static final Drivetrain m_drivetrain = new Drivetrain();
+  private static final DrivetrainRomi m_drivetrain = new DrivetrainRomi();
   //private final pathweaver m_pathweaver = new pathweaver(); 
 
   private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);

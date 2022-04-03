@@ -35,7 +35,7 @@ public class PathGroup extends SubsystemBase {
     private PathSet ramsete = null;
     private LinkedList<pathInfo> path_info_list = null; 
 
-    public PathGroup(Drivetrain drivetrain, String project_dir, String group_name){
+    public PathGroup(DrivetrainRomi drivetrain, String project_dir, String group_name){
         this.project_dir = project_dir; 
         this.group_name = group_name; 
         group_dir = project_dir + GROUPS + group_name;

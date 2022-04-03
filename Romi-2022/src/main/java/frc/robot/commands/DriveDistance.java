@@ -4,11 +4,11 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.DrivetrainRomi;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveDistance extends CommandBase {
-  private final Drivetrain m_drive;
+  private final DrivetrainRomi m_drive;
   //private final double m_distance;
   private final double m_speed;
 
@@ -20,7 +20,7 @@ public class DriveDistance extends CommandBase {
    * @param inches The number of inches the robot will drive
    * @param drive The drivetrain subsystem on which this command will run
    */
-  public DriveDistance(double speed, double inches, Drivetrain drive) {
+  public DriveDistance(double speed, double inches, DrivetrainRomi drive) {
     //m_distance = inches;
     m_speed = speed;
     m_drive = drive;

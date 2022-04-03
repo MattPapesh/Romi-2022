@@ -36,14 +36,14 @@ import java.nio.file.Path;
 */
 
 public class PathSet extends SubsystemBase {
-    private Drivetrain drivetrain = null; 
+    private DrivetrainRomi drivetrain = null; 
     private final String FILE_TYPE = ".wpilib.json";
     private final String REDIRECT_DIR = "/../../output/";
     private String group_dir = "";
     private String path_dir = "Path directory was not provided! \n";
     private String path_name = "Path name was not provided! \n";  
 
-    public PathSet(Drivetrain drivetrain, String group_dir){
+    public PathSet(DrivetrainRomi drivetrain, String group_dir){
         this.drivetrain = drivetrain; 
         this.group_dir = group_dir; 
     }

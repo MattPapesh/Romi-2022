@@ -4,219 +4,147 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import java.beans.Encoder;
+
+import com.kauailabs.navx.frc.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.EncoderType;
+import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.sensors.RomiGyro;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase {
-  private static final double kCountsPerRevolution = 1440.0;
-  private static final double kWheelDiameterMeter = 0.07;
+  
+  final AHRS navx_gyro = new AHRS();
+  final Field2d field_2d = new Field2d();
+  final DifferentialDriveOdometry drive_odometry = new DifferentialDriveOdometry(navx_gyro.getRotation2d());
 
-  // The Romi has the left and right motors set to
-  // PWM channels 0 and 1 respectively
-  private final Spark m_leftMotor = new Spark(0);
-  private final Spark m_rightMotor = new Spark(1);
+  final double RPM_TO_MS_RATIO = (Constants.DRIVE.WHEEL_DIAMETER_METER * Math.PI) / 60; // RPM to m/s
 
-  // The Romi has onboard encoders that are hardcoded
-  // to use DIO pins 4/5 and 6/7 for the left and right
-  private final Encoder m_leftEncoder = new Encoder(4, 5);
-  private final Encoder m_rightEncoder = new Encoder(6, 7);
+  final CANSparkMax[] DRIVETRAIN_LEFT = {new CANSparkMax(Constants.CAN_ID.DRIVETRAIN_LEFT[0], MotorType.kBrushless), 
+  new CANSparkMax(Constants.CAN_ID.DRIVETRAIN_LEFT[1], MotorType.kBrushless)};
+  final CANSparkMax[] DRIVETRAIN_RIGHT = {new CANSparkMax(Constants.CAN_ID.DRIVETRAIN_RIGHT[0], MotorType.kBrushless), 
+  new CANSparkMax(Constants.CAN_ID.DRIVETRAIN_RIGHT[1], MotorType.kBrushless)};
 
-  // Set up the differential drive controller
-  private final DifferentialDrive m_diffDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
+  DifferentialDrive differential_drive = null;
+  MotorControllerGroup left_motor_controller = null;
+  MotorControllerGroup right_motor_controller = null;
 
-  // Set up the RomiGyro
-  private final RomiGyro m_gyro = new RomiGyro();
+  RelativeEncoder[] left_encoders = {DRIVETRAIN_LEFT[0].getEncoder(Type.kHallSensor, 42), DRIVETRAIN_LEFT[1].getEncoder(Type.kHallSensor, 42)};
+  RelativeEncoder[] right_encoders = {DRIVETRAIN_RIGHT[0].getEncoder(Type.kHallSensor, 42), DRIVETRAIN_RIGHT[1].getEncoder(Type.kHallSensor, 42)};
+  
+  public Drivetrain(){
+    
+    DRIVETRAIN_RIGHT[0].setInverted(true);
+    DRIVETRAIN_RIGHT[1].setInverted(true);
 
-  // Set up the BuiltInAccelerometer
-  private final BuiltInAccelerometer m_accelerometer = new BuiltInAccelerometer();
-
-  // Odometry class for tracking robot pose
-  private final DifferentialDriveOdometry m_odometry;
-
-  // Also show a field diagram
-  private final Field2d m_field2d = new Field2d();
-
-  /** Creates a new Drivetrain. */
-  public Drivetrain() {
-    // Use inches as unit for encoder distances
-    m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
-    m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
-    resetEncoders();
-
-    m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
-    SmartDashboard.putData("field", m_field2d);
+    left_motor_controller = new MotorControllerGroup(DRIVETRAIN_LEFT[0], DRIVETRAIN_LEFT[1]);
+    right_motor_controller = new MotorControllerGroup(DRIVETRAIN_RIGHT[0], DRIVETRAIN_RIGHT[1]);
+    differential_drive = new DifferentialDrive(left_motor_controller, right_motor_controller);
   }
 
-  public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
-    m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
+  public void TankDrive(double left_speed, double right_speed)
+  {
+    if(differential_drive != null)
+    {
+      differential_drive.tankDrive(left_speed, right_speed);
+    }
   }
 
-  /**
-   * Controls the left and right sides of the drive directly with voltages.
-   * @param leftVolts the commanded left output
-   * @param rightVolts the commanded right output
-   */
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    m_leftMotor.setVoltage(leftVolts);
-    m_rightMotor.setVoltage(-rightVolts); // We invert this to maintain +ve = forward
-    m_diffDrive.feed();
+  public void resetOdometry(Pose2d pose) {
+    drive_odometry.resetPosition(pose, navx_gyro.getRotation2d());
   }
 
-  public void resetEncoders() {
-    m_leftEncoder.reset();
-    m_rightEncoder.reset();
+  public void tankDriveVolts(double left_volts, double right_volts) {
+    left_motor_controller.setVoltage(left_volts);
+    right_motor_controller.setVoltage(right_volts);
+    differential_drive.feed();
   }
 
-  public int getLeftEncoderCount() {
-    return m_leftEncoder.get();
+  public void displayVoltages() {
+    SmartDashboard.putNumber("Left Drive Front: ", DRIVETRAIN_LEFT[0].getBusVoltage());
+    SmartDashboard.putNumber("Left Drive Back: ", DRIVETRAIN_LEFT[1].getBusVoltage());
+    SmartDashboard.putNumber("Right Drive Front: ", DRIVETRAIN_RIGHT[0].getBusVoltage());
+    SmartDashboard.putNumber("Right Drive Back: ", DRIVETRAIN_RIGHT[1].getBusVoltage());
   }
 
-  public int getRightEncoderCount() {
-    return m_rightEncoder.get();
+  public Pose2d getPose() {
+    return drive_odometry.getPoseMeters();
   }
 
-  public double getLeftDistanceMeter() {
-    return m_leftEncoder.getDistance();
+  private double getAverageRPM(RelativeEncoder[] encoder_pair) { 
+    // Using defualt units for velocity (RPM)
+    return (encoder_pair[0].getVelocity() + encoder_pair[1].getVelocity()) / 2;
   }
 
-  public double getRightDistanceMeter() {
-    return m_rightEncoder.getDistance();
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() { 
+    return new DifferentialDriveWheelSpeeds(getAverageRPM(left_encoders) * RPM_TO_MS_RATIO, getAverageRPM(right_encoders) * RPM_TO_MS_RATIO);
   }
 
-  public double getAverageDistanceMeter() {
-    return (getLeftDistanceMeter() + getRightDistanceMeter()) / 2.0;
+  public double getNavXAngleZ() {
+    return navx_gyro.getAngle();
   }
 
-  /**
-   * The acceleration in the X-axis.
-   *
-   * @return The acceleration of the Romi along the X-axis in Gs
-   */
-  public double getAccelX() {
-    return m_accelerometer.getX();
+  public double getNavXAccelX() {
+    return navx_gyro.getRawAccelX();
   }
 
-  /**
-   * The acceleration in the Y-axis.
-   *
-   * @return The acceleration of the Romi along the Y-axis in Gs
-   */
-  public double getAccelY() {
-    return m_accelerometer.getY();
+  public double getNavXAccelY() {
+    return navx_gyro.getRawAccelY();
   }
 
-  /**
-   * The acceleration in the Z-axis.
-   *
-   * @return The acceleration of the Romi along the Z-axis in Gs
-   */
-  public double getAccelZ() {
-    return m_accelerometer.getZ();
+  public double getNavXAccelZ() {
+    return navx_gyro.getRawAccelZ();
   }
 
-  /**
-   * Current angle of the Romi around the X-axis.
-   *
-   * @return The current angle of the Romi in degrees
-   */
-  public double getGyroAngleX() {
-    return m_gyro.getAngleX();
-  }
-
-  /**
-   * Current angle of the Romi around the Y-axis.
-   *
-   * @return The current angle of the Romi in degrees
-   */
-  public double getGyroAngleY() {
-    return m_gyro.getAngleY();
-  }
-
-  /**
-   * Current angle of the Romi around the Z-axis.
-   *
-   * @return The current angle of the Romi in degrees
-   */
-  public double getGyroAngleZ() {
-    return m_gyro.getAngleZ();
-  }
-
-  /** Reset the gyro. */
   public void resetGyro() {
-    m_gyro.reset();
+    navx_gyro.reset();
+  }
+
+
+  public void setMaxOutput(double max_output) {
+    differential_drive.setMaxOutput(max_output);
+  }
+
+  public void zeroHeading() {
+    navx_gyro.reset();
+  }
+
+  public double getHeading() {
+    return navx_gyro.getRotation2d().getDegrees();
+  }
+
+  public double getTurnRate() {
+    return navx_gyro.getRate();
+  }
+
+  private double getAverageEncoderDistance(RelativeEncoder[] encoder_pair) {
+    return ((encoder_pair[0].getPosition() + encoder_pair[1].getPosition()) / 2) * Constants.DRIVE.WHEEL_DIAMETER_METER * Math.PI;
   }
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
-    m_odometry.update(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
-    
-    // Also update the Field2D object (so that we can visualize this in sim)
-    m_field2d.setRobotPose(getPose());
+    drive_odometry.update(navx_gyro.getRotation2d(), getAverageEncoderDistance(left_encoders), getAverageEncoderDistance(right_encoders));
+    field_2d.setRobotPose(getPose());
   }
 
-  /**
-   * Returns the currently estimated pose of the robot.
-   * @return The pose
-   */
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
-  }
-
-  /**
-   * Returns the current wheel speeds of the robot.
-   * @return The current wheel speeds
-   */
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getRate(), m_rightEncoder.getRate());
-  }
-
-  /**
-   * Resets the odometry to the specified pose
-   * @param pose The pose to which to set the odometry
-   */
-  public void resetOdometry(Pose2d pose) {
-    resetEncoders();
-    m_odometry.resetPosition(pose, m_gyro.getRotation2d());
-  }
-
-  /**
-   * Sets the max output of the drive. Useful for scaling the drive to drive more slowly
-   * @param maxOutput The maximum output to which the drive will be constrained
-   */
-  public void setMaxOutput(double maxOutput) {
-    m_diffDrive.setMaxOutput(maxOutput);
-  }
-
-  /**
-   * Zeroes the heading of the robot
-   */
-  public void zeroHeading() {
-    m_gyro.reset();
-  }
-
-  /**
-   * Returns the heading of the robot
-   * @return The robot's heading in degrees, from -180 to 180
-   */
-  public double getHeading() {
-    return m_gyro.getRotation2d().getDegrees();
-  }
-
-  /**
-   * Returns the turn rate of the robot
-   * @return The turn rate of the robot, in degrees per second
-   */
-  public double getTurnRate() {
-    return -m_gyro.getRate();
-  }
+  @Override
+  public void simulationPeriodic() {}
 }

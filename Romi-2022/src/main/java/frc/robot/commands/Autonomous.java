@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.DrivetrainRomi;
 import frc.robot.subsystems.PathweaverProject;
 
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ public class Autonomous extends SequentialCommandGroup
 
     private LinkedList<routine> routine_list = new LinkedList<routine>(); 
 
-    public Autonomous(Drivetrain drivetrain, String routine_name){
+    public Autonomous(DrivetrainRomi drivetrain, String routine_name){
         AutonomousDrive my_auto_drive = new AutonomousDrive(drivetrain, new PathweaverProject(drivetrain, "foward_and_back")); 
 
         // Create routines by passing in a name and a sequential command group!

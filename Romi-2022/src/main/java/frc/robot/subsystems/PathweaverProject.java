@@ -14,9 +14,9 @@ public class PathweaverProject extends SubsystemBase {
     private final String INITIAL_DIR = "paths/";
     private String project_name = "";
     private String project_dir = ""; 
-    private Drivetrain drivetrain = null; 
+    private DrivetrainRomi drivetrain = null; 
 
-    public PathweaverProject(Drivetrain drivetrain, String project_name){
+    public PathweaverProject(DrivetrainRomi drivetrain, String project_name){
         this.project_name = project_name; 
         this.drivetrain = drivetrain; 
         project_dir = INITIAL_DIR + project_name; 

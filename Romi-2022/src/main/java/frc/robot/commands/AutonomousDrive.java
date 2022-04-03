@@ -2,17 +2,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.PathweaverProject;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.DrivetrainRomi;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
 // Purpose: Utilize pathweaver related subsystems to autonmously drive a group of paths of a pathweaver project given a group name
 
 public class AutonomousDrive{
-    private Drivetrain drivetrain = null; 
+    private DrivetrainRomi drivetrain = null; 
     private PathweaverProject pathweaver_project = null;   
 
-    public AutonomousDrive(Drivetrain drivetrain, PathweaverProject pathweaver_project){
+    public AutonomousDrive(DrivetrainRomi drivetrain, PathweaverProject pathweaver_project){
         this.drivetrain = drivetrain; 
         this.pathweaver_project = pathweaver_project; 
     }

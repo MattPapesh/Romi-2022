@@ -26,6 +26,7 @@ public final class Constants
         public static final double kiDriveCoefficient = 0;
         public static final double kdDriveCoefficient = 0; 
 
+        public static final double kWheelDiameterMeters = 0.0696595;
         public static final double kTrackWidthMeters = 0.646043228;
         public static final DifferentialDriveKinematics kDriveKinematics = 
         new DifferentialDriveKinematics(kTrackWidthMeters);

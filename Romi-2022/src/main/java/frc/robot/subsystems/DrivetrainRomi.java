@@ -17,8 +17,8 @@ import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainRomi extends SubsystemBase {
-  private static final double kCountsPerRevolution = 1440.0;
-  private static final double kWheelDiameterMeter = 0.07;
+  //private static final double kCountsPerRevolution = 1440.0;
+  //private static final double kWheelDiameterMeter = 0.07;
 
   // The Romi has the left and right motors set to
   // PWM channels 0 and 1 respectively

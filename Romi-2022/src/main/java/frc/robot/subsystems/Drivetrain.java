@@ -21,20 +21,25 @@ public class Drivetrain extends SubsystemBase {
   final Field2d field_2d = new Field2d();
   final DifferentialDriveOdometry drive_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
-  final double RPM_TO_MS_RATIO = (Constants.Drive.kWheelDiameterMeters* Math.PI) / 60; // RPM to m/s
+  final double RPM_TO_MS_RATIO = (Constants.Drive.kWheelDiameterMeters * Math.PI) / 60; // RPM to m/s
+  final double ROT_TO_METERS_RATIO = Constants.Drive.kWheelDiameterMeters * Math.PI;
 
   final Spark DRIVETRAIN_LEFT = new Spark(0); 
-  final Spark DRIVETRAIN_RIGHT = new Spark(0);
+  final Spark DRIVETRAIN_RIGHT = new Spark(1);
 
   DifferentialDrive differential_drive = null;
   MotorControllerGroup left_motor_controller = null;
   MotorControllerGroup right_motor_controller = null;
 
-  RelativeEncoder left_encoder = (RelativeEncoder)new Encoder(1, 4);
-  RelativeEncoder right_encoder = (RelativeEncoder)new Encoder(2, 2); 
+  RelativeEncoder left_encoder = (RelativeEncoder)new Encoder(4, 5);
+  RelativeEncoder right_encoder = (RelativeEncoder)new Encoder(6, 7); 
   
   public Drivetrain(){
-    
+    left_encoder.setPositionConversionFactor(ROT_TO_METERS_RATIO);
+    right_encoder.setPositionConversionFactor(ROT_TO_METERS_RATIO);
+    left_encoder.setVelocityConversionFactor(RPM_TO_MS_RATIO);
+    right_encoder.setVelocityConversionFactor(RPM_TO_MS_RATIO);
+
     DRIVETRAIN_RIGHT.setInverted(true);
     differential_drive = new DifferentialDrive(DRIVETRAIN_LEFT, DRIVETRAIN_RIGHT);
   }
@@ -62,7 +67,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() { 
-    return new DifferentialDriveWheelSpeeds(left_encoder.getVelocity() * RPM_TO_MS_RATIO, right_encoder.getVelocity() * RPM_TO_MS_RATIO);
+    return new DifferentialDriveWheelSpeeds(left_encoder.getVelocity(), right_encoder.getVelocity());
   }
 
   public double getGyroAngleZ() {
